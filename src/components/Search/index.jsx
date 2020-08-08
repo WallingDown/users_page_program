@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 
 export default class Search extends Component {
     // 状态
@@ -13,8 +14,21 @@ export default class Search extends Component {
     }
 
     handleSearch = () =>{
-        // 获取用户输入
-        alert(this.state.keyWord)
+        // 1、获取用户输入
+        const {keyWord} = this.state
+        const {updateAppState} = this.props
+        // 2、请求之前展示的loading界面
+        updateAppState({isLoading:true,isFirst:false})
+        // 3、发送请求
+        axios.get(`/api/search/users?q=${keyWord}`).then(
+            response => {
+                updateAppState({users:response.data.items,isLoading:false})
+            },
+            err => {
+                // console.log(err.message)//Network Error
+                updateAppState({error:err.message,isLoading:false})
+            }
+        )
     }
 
     render() {
